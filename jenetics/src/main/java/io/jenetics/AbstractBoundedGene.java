@@ -19,10 +19,13 @@
  */
 package io.jenetics;
 
+import static java.util.Objects.hash;
 import static java.util.Objects.requireNonNull;
 
 import java.io.Serializable;
 import java.util.Objects;
+
+import io.jenetics.internal.util.Murmur3;
 
 /**
  * Base class for genes where the alleles are bound by a minimum and a maximum
@@ -96,11 +99,10 @@ abstract class AbstractBoundedGene<
 
 	@Override
 	public int hashCode() {
-		int hash = 17;
-		hash += 31*Objects.hashCode(_value) + 37;
-		hash += 31*Objects.hashCode(_min) + 37;
-		hash += 31*Objects.hashCode(_max) + 37;
-		return hash;
+		int hash = Murmur3.hash(_value, 17);
+		hash = Murmur3.hash(_min, hash);
+		hash = Murmur3.hash(_max, hash);
+		return Murmur3.finalize(hash, 3);
 	}
 
 	@Override

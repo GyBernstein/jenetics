@@ -40,6 +40,8 @@ import java.util.stream.Collector;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import io.jenetics.internal.util.Murmur3;
+
 /**
  * General interface for a ordered, fixed sized, object sequence.
  * <br>
@@ -792,11 +794,11 @@ public interface Seq<T> extends Iterable<T>, IntFunction<T> {
 	 * @return the hash code of the given sequence.
 	 */
 	public static int hashCode(final Seq<?> seq) {
-		int hash = 1;
+		int hash = 17;
 		for (Object element : seq) {
-			hash = 31*hash + (element == null ? 0: element.hashCode());
+			hash = Murmur3.hash(element, hash);
 		}
-		return hash;
+		return Murmur3.finalize(hash, seq.length());
 	}
 
 	/**
@@ -821,11 +823,9 @@ public interface Seq<T> extends Iterable<T>, IntFunction<T> {
 		boolean equals = seq.length() == other.length();
 		for (int i = seq.length(); equals && --i >= 0;) {
 			final Object element = seq.get(i);
-			if (element != null) {
-				equals = element.equals(other.get(i));
-			} else {
-				equals = other.get(i) == null;
-			}
+			equals = element != null
+				? element.equals(other.get(i))
+				: other.get(i) == null;
 		}
 		return equals;
 	}

@@ -28,7 +28,6 @@ import java.util.Objects;
 import java.util.RandomAccess;
 
 import io.jenetics.internal.util.Equality;
-import io.jenetics.internal.util.Hash;
 import io.jenetics.util.ISeq;
 import io.jenetics.util.Verifiable;
 
@@ -116,7 +115,7 @@ public abstract class AbstractChromosome<G extends Gene<?, G>>
 
 	@Override
 	public int hashCode() {
-		return Hash.of(getClass()).and(_genes).value();
+		return Objects.hashCode(_genes);
 	}
 
 	@Override
